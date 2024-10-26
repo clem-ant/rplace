@@ -1,0 +1,5 @@
+This project is a simple Next.js app that reproduces the r/place reddit project.
+It's a canvas where you can draw pixel by pixel.
+The grid size can be configured
+The color of the pixels can be configured too
+There should be users connected to the same canvas and be able to see each others drawings in real time
