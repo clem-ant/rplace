@@ -1,0 +1,40 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+}
+
+model User {
+  id        String   @default(cuid()) @id
+  username  String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  pixels    Pixel[]  @relation("UserPixels")
+  pixelNumber Int
+}
+
+model Pixel {
+  id        String   @default(cuid()) @id
+  x         Int
+  y         Int
+  color     String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], name: "UserPixels")
+  canvasId  String
+  canvas    Canvas   @relation(fields: [canvasId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Canvas {
+  id        String     @default(cuid()) @id
+  imageUrl  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  pixels    Pixel[]
+}

@@ -1,21 +1,21 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
 import config from "@/config/canvas.json";
+import { socket } from "@/app/socket";
+import { Button } from "@/components/ui/button";
 
 const Canvas = () => {
   const canvasRef = useRef(null);
-  const [ctx, setCtx] = useState(null);
+  const ctxRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentColor, setCurrentColor] = useState(config.colors[0]);
-  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     canvas.width = config.gridSize;
     canvas.height = config.gridSize;
     const context = canvas.getContext("2d");
-    setCtx(context);
+    ctxRef.current = context; // Use ref instead of state
 
     // Initialize canvas with white background
     context.fillStyle = "white";
@@ -34,10 +34,6 @@ const Canvas = () => {
 
     // Initialize socket connection
     const socketInitializer = async () => {
-      await fetch("/api/socket");
-      const socket = io();
-      setSocket(socket);
-
       socket.on("receiveUpdate", (data) => {
         drawPixel(data.x, data.y, data.color);
       });
@@ -47,10 +43,14 @@ const Canvas = () => {
   }, []);
 
   const drawPixel = (x, y, color) => {
-    if (ctx) {
-      ctx.fillStyle = color;
-      ctx.fillRect(Math.floor(x / 10) * 10, Math.floor(y / 10) * 10, 10, 10);
+    const ctx = ctxRef.current;
+    if (!ctx) {
+      console.warn("Context is not set yet.");
+      return;
     }
+    console.log("Drawing pixel at", x, y, "with color", color);
+    ctx.fillStyle = color;
+    ctx.fillRect(Math.floor(x / 10) * 10, Math.floor(y / 10) * 10, 10, 10);
   };
 
   const handleMouseDown = (e) => {
@@ -59,6 +59,7 @@ const Canvas = () => {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     drawPixel(x, y, currentColor);
+    console.log(x, y, currentColor);
     socket.emit("updatePixels", { x, y, color: currentColor });
   };
 
@@ -89,7 +90,7 @@ const Canvas = () => {
       />
       <div className="mt-4 flex space-x-2">
         {config.colors.map((color) => (
-          <button
+          <Button
             key={color}
             className="w-8 h-8 rounded-full"
             style={{ backgroundColor: color }}
