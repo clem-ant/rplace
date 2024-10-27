@@ -8,6 +8,7 @@ const Canvas = ({ selectedColor }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const { canvasData, availableColors, drawPixel, gridSize } = useCanvas();
   const [currentColor, setCurrentColor] = useState(selectedColor);
+  const [hoverCell, setHoverCell] = useState({ x: -1, y: -1 });
 
   const cellSize = 10; // Size of each cell in pixels
 
@@ -37,7 +38,19 @@ const Canvas = ({ selectedColor }) => {
     canvasData.forEach(({ x, y, color }) => {
       drawPixelOnCanvas(x, y, color);
     });
-  }, [canvasData, gridSize]);
+
+    // Draw hover highlight
+    if (hoverCell.x >= 0 && hoverCell.y >= 0) {
+      context.strokeStyle = "black";
+      context.lineWidth = 2;
+      context.strokeRect(
+        hoverCell.x * cellSize,
+        hoverCell.y * cellSize,
+        cellSize,
+        cellSize
+      );
+    }
+  }, [canvasData, gridSize, hoverCell]);
 
   const drawPixelOnCanvas = (x, y, color) => {
     const ctx = ctxRef.current;
@@ -58,15 +71,24 @@ const Canvas = ({ selectedColor }) => {
   };
 
   const handleMouseMove = (e) => {
-    if (!isDrawing) return;
     const rect = canvasRef.current.getBoundingClientRect();
     const x = Math.floor((e.clientX - rect.left) / cellSize);
     const y = Math.floor((e.clientY - rect.top) / cellSize);
-    drawPixel(x, y, currentColor);
+
+    setHoverCell({ x, y });
+
+    if (isDrawing) {
+      drawPixel(x, y, currentColor);
+    }
   };
 
   const handleMouseUp = () => {
     setIsDrawing(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDrawing(false);
+    setHoverCell({ x: -1, y: -1 });
   };
 
   return (
@@ -78,7 +100,7 @@ const Canvas = ({ selectedColor }) => {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
         className="border border-gray-300 cursor-crosshair"
       />
     </div>
