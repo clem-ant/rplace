@@ -38,6 +38,7 @@ export function useCanvas() {
 
   const drawPixel = useCallback((x, y, color) => {
     const newPixel = { x, y, color };
+    console.log("newPixel", color);
     socket.emit("drawPixel", newPixel);
     setCanvasData((prevData) => {
       const existingPixelIndex = prevData.findIndex(

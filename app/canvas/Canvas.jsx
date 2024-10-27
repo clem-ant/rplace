@@ -1,14 +1,13 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { useCanvas } from "@/hooks/useCanvas";
 import { useEffect, useRef, useState } from "react";
 
-const Canvas = () => {
+const Canvas = ({ selectedColor }) => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const { canvasData, availableColors, drawPixel, gridSize } = useCanvas();
-  const [currentColor, setCurrentColor] = useState(availableColors[0]);
+  const [currentColor, setCurrentColor] = useState(selectedColor);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -61,6 +60,7 @@ const Canvas = () => {
     const rect = canvasRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+    console.log("currentColor", currentColor);
     drawPixel(x, y, currentColor);
   };
 
@@ -80,16 +80,6 @@ const Canvas = () => {
         onMouseLeave={handleMouseUp}
         className="border border-gray-300 cursor-crosshair"
       />
-      <div className="mt-4 flex space-x-2">
-        {availableColors.map((color) => (
-          <Button
-            key={color}
-            className="w-8 h-8 rounded-full"
-            style={{ backgroundColor: color }}
-            onClick={() => setCurrentColor(color)}
-          />
-        ))}
-      </div>
     </div>
   );
 };
