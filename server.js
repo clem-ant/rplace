@@ -9,6 +9,9 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
+// Initialize canvas data
+let canvasData = [];
+
 app.prepare().then(() => {
   const httpServer = createServer(handler);
   const io = new Server(httpServer);
@@ -18,13 +21,24 @@ app.prepare().then(() => {
     socket.on("getClientCount", () => {
       io.emit("updateClientCount", io.engine.clientsCount);
     });
+    socket.on("drawPixel", (data) => {
+      console.log("drawPixel", data);
+      // Check if the pixel already exists and update it, or add a new one
+      const existingPixelIndex = canvasData.findIndex(
+        (pixel) => pixel.x === data.x && pixel.y === data.y
+      );
+      if (existingPixelIndex !== -1) {
+        canvasData[existingPixelIndex] = data;
+      } else {
+        canvasData.push(data);
+      }
+      socket.broadcast.emit("receiveUpdate", data);
+    });
+    socket.on("getCanvasData", (callback) => {
+      callback(canvasData);
+    });
     socket.on("disconnect", () => {
       io.emit("updateClientCount", io.engine.clientsCount);
-    });
-    // Move the updatePixels listener inside the connection event
-    socket.on("updatePixels", (data) => {
-      // Broadcast the update to all connected clients
-      socket.broadcast.emit("receiveUpdate", data);
     });
   });
 
