@@ -13,7 +13,7 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title: "Place",
+  title: "Place - niclem 4l",
   description: "r/place clone pour niclem 4l trophy",
 };
 

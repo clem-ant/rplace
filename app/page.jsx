@@ -10,9 +10,9 @@ export default function Home() {
         <div id="painting" className="w-full h-full">
           <Canvas />
         </div>
-        <div className=" text-black absolute top-0 right-0 p-4">
+        <div className=" text-black absolute bottom-0 mx-auto p-4">
           <span>
-            Utilisateurs en ligne : <UserCount />
+            <UserCount />
           </span>
         </div>
       </div>
