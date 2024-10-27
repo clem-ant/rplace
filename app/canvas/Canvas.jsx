@@ -9,10 +9,12 @@ const Canvas = ({ selectedColor }) => {
   const { canvasData, availableColors, drawPixel, gridSize } = useCanvas();
   const [currentColor, setCurrentColor] = useState(selectedColor);
 
+  const cellSize = 10; // Size of each cell in pixels
+
   useEffect(() => {
     const canvas = canvasRef.current;
-    canvas.width = gridSize;
-    canvas.height = gridSize;
+    canvas.width = gridSize * cellSize;
+    canvas.height = gridSize * cellSize;
     const context = canvas.getContext("2d");
     ctxRef.current = context;
 
@@ -22,12 +24,12 @@ const Canvas = ({ selectedColor }) => {
 
     // Draw grid
     context.strokeStyle = "#CCCCCC";
-    for (let i = 0; i <= gridSize; i += 10) {
+    for (let i = 0; i <= gridSize; i++) {
       context.beginPath();
-      context.moveTo(i, 0);
-      context.lineTo(i, gridSize);
-      context.moveTo(0, i);
-      context.lineTo(gridSize, i);
+      context.moveTo(i * cellSize, 0);
+      context.lineTo(i * cellSize, canvas.height);
+      context.moveTo(0, i * cellSize);
+      context.lineTo(canvas.width, i * cellSize);
       context.stroke();
     }
 
@@ -44,22 +46,22 @@ const Canvas = ({ selectedColor }) => {
       return;
     }
     ctx.fillStyle = color;
-    ctx.fillRect(Math.floor(x / 10) * 10, Math.floor(y / 10) * 10, 10, 10);
+    ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
   };
 
   const handleMouseDown = (e) => {
     setIsDrawing(true);
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = Math.floor((e.clientX - rect.left) / cellSize);
+    const y = Math.floor((e.clientY - rect.top) / cellSize);
     drawPixel(x, y, currentColor);
   };
 
   const handleMouseMove = (e) => {
     if (!isDrawing) return;
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = Math.floor((e.clientX - rect.left) / cellSize);
+    const y = Math.floor((e.clientY - rect.top) / cellSize);
     drawPixel(x, y, currentColor);
   };
 
@@ -70,8 +72,8 @@ const Canvas = ({ selectedColor }) => {
   return (
     <div className="flex flex-col items-center">
       <canvas
-        width={gridSize}
-        height={gridSize}
+        width={gridSize * cellSize}
+        height={gridSize * cellSize}
         ref={canvasRef}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
