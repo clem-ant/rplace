@@ -11,15 +11,17 @@ const handler = app.getRequestHandler();
 
 app.prepare().then(() => {
   const httpServer = createServer(handler);
-
   const io = new Server(httpServer);
-
   io.on("connection", (socket) => {
-    console.log("A user connected");
-
+    io.emit("updateClientCount", io.engine.clientsCount);
+    socket.on("getClientCount", () => {
+      io.emit("updateClientCount", io.engine.clientsCount);
+    });
+    socket.on("disconnect", () => {
+      io.emit("updateClientCount", io.engine.clientsCount);
+    });
     // Move the updatePixels listener inside the connection event
     socket.on("updatePixels", (data) => {
-      console.log(data);
       // Broadcast the update to all connected clients
       socket.broadcast.emit("receiveUpdate", data);
     });

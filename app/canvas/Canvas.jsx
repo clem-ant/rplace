@@ -32,6 +32,20 @@ const Canvas = () => {
       context.stroke();
     }
 
+    // Fetch and render stored pixels
+    const fetchPixels = async () => {
+      try {
+        const pixels = await getPixels();
+        pixels.forEach(({ x, y, color }) => {
+          drawPixel(x, y, color);
+        });
+      } catch (error) {
+        console.error("Failed to fetch pixels:", error);
+      }
+    };
+
+    fetchPixels();
+
     // Initialize socket connection
     const socketInitializer = async () => {
       socket.on("receiveUpdate", (data) => {
