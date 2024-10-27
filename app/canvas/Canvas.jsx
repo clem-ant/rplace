@@ -60,7 +60,6 @@ const Canvas = ({ selectedColor }) => {
     const rect = canvasRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    console.log("currentColor", currentColor);
     drawPixel(x, y, currentColor);
   };
 

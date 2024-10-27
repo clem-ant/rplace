@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import Canvas from "./canvas/Canvas";
 import UserColors from "./homeUI/UserColors";
@@ -9,7 +8,6 @@ export default function UserWrapper() {
   const [selectedColor, setSelectedColor] = useState("#000000"); // Default color
 
   const handleColorSelect = (color) => {
-    console.log("handleColorSelect", color);
     setSelectedColor(color);
   };
 
