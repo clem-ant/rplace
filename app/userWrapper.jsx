@@ -7,7 +7,7 @@ import UserPlacePixel from "./homeUI/UserPlacePixel";
 
 export default function UserWrapper() {
   const [selectedColor, setSelectedColor] = useState("#222222"); // Default color
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(0.2);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const canvasRef = useRef(null);
   const isDragging = useRef(false);
@@ -64,21 +64,25 @@ export default function UserWrapper() {
   return (
     <>
       <div
-        id="painting"
-        className="w-full h-full"
-        ref={canvasRef}
-        onWheel={handleWheel}
+        id="canvas-container"
+        className="w-full h-full cursor-grab bg-gray-200"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
+        onWheel={handleWheel}
         onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        style={{
-          transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
-          transformOrigin: "0 0",
-          cursor: isDragging.current ? "cursor-grabbing" : "cursor-grab",
-        }}
       >
-        <Canvas selectedColor={selectedColor} mousePosition={position} />
+        <div
+          id="painting"
+          className="w-full h-full"
+          ref={canvasRef}
+          onMouseLeave={handleMouseUp}
+          style={{
+            transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
+            transformOrigin: "0 0",
+          }}
+        >
+          <Canvas selectedColor={selectedColor} mousePosition={position} />
+        </div>
       </div>
       <div className="text-black absolute bottom-0 mx-auto p-4">
         <span>
