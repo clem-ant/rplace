@@ -1,5 +1,5 @@
 "use client";
-import { socket } from "@/app/socket";
+import socket from "@/app/socket";
 import { useEffect, useState } from "react";
 
 export default function UserCount() {

@@ -1,12 +1,10 @@
-import { socket } from "@/app/socket";
+import socket from "@/app/socket";
 import config from "@/config/canvas.json";
 import { useCallback, useEffect, useState } from "react";
 
 export function useCanvas() {
   const [canvasData, setCanvasData] = useState([]);
-  const [availableColors, setAvailableColors] = useState(
-    config.colors || ["#000000", "#FF0000", "#00FF00", "#0000FF"]
-  );
+  const [availableColors, setAvailableColors] = useState(config.colors);
 
   useEffect(() => {
     const handleReceiveUpdate = (data) => {

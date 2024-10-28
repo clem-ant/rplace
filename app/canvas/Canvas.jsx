@@ -7,7 +7,6 @@ const Canvas = ({ selectedColor }) => {
   const ctxRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const { canvasData, availableColors, drawPixel, gridSize } = useCanvas();
-  const [currentColor, setCurrentColor] = useState(selectedColor);
   const [hoverCell, setHoverCell] = useState({ x: -1, y: -1 });
 
   const cellSize = 10; // Size of each cell in pixels
@@ -67,7 +66,7 @@ const Canvas = ({ selectedColor }) => {
     const rect = canvasRef.current.getBoundingClientRect();
     const x = Math.floor((e.clientX - rect.left) / cellSize);
     const y = Math.floor((e.clientY - rect.top) / cellSize);
-    drawPixel(x, y, currentColor);
+    drawPixel(x, y, selectedColor);
   };
 
   const handleMouseMove = (e) => {
@@ -78,7 +77,7 @@ const Canvas = ({ selectedColor }) => {
     setHoverCell({ x, y });
 
     if (isDrawing) {
-      drawPixel(x, y, currentColor);
+      drawPixel(x, y, selectedColor);
     }
   };
 

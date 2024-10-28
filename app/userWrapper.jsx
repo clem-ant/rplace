@@ -8,6 +8,7 @@ export default function UserWrapper() {
   const [selectedColor, setSelectedColor] = useState("#000000"); // Default color
 
   const handleColorSelect = (color) => {
+    console.log("color", color);
     setSelectedColor(color);
   };
 

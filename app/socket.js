@@ -2,4 +2,8 @@
 
 import { io } from "socket.io-client";
 
-export const socket = io();
+const socket = io({
+  path: "/api/socket",
+});
+
+export default socket;
