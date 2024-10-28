@@ -2,14 +2,15 @@
 import { useCanvas } from "@/hooks/useCanvas";
 import { useEffect, useRef, useState } from "react";
 
-const Canvas = ({ selectedColor }) => {
+const Canvas = ({ selectedColor, mousePosition }) => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const { canvasData, availableColors, drawPixel, gridSize } = useCanvas();
+  const { canvasData, drawPixel, gridSize, randomDrawPixel } = useCanvas();
   const [hoverCell, setHoverCell] = useState({ x: -1, y: -1 });
+  const [scale, setScale] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
 
-  const cellSize = 10; // Size of each cell in pixels
+  const cellSize = 20; // Size of each cell in pixels
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -18,7 +19,6 @@ const Canvas = ({ selectedColor }) => {
     const context = canvas.getContext("2d");
     ctxRef.current = context;
 
-    // Initialize canvas with white background
     context.fillStyle = "white";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -37,8 +37,11 @@ const Canvas = ({ selectedColor }) => {
     canvasData.forEach(({ x, y, color }) => {
       drawPixelOnCanvas(x, y, color);
     });
+    // randomDrawPixel();
+  }, [canvasData, gridSize, hoverCell, scale, offset]);
 
-    // Draw hover highlight
+  useEffect(() => {
+    const context = ctxRef.current;
     if (hoverCell.x >= 0 && hoverCell.y >= 0) {
       context.strokeStyle = "black";
       context.lineWidth = 2;
@@ -49,7 +52,7 @@ const Canvas = ({ selectedColor }) => {
         cellSize
       );
     }
-  }, [canvasData, gridSize, hoverCell]);
+  }, [hoverCell]);
 
   const drawPixelOnCanvas = (x, y, color) => {
     const ctx = ctxRef.current;
@@ -61,46 +64,43 @@ const Canvas = ({ selectedColor }) => {
     ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
   };
 
-  const handleMouseDown = (e) => {
-    setIsDrawing(true);
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = Math.floor((e.clientX - rect.left) / cellSize);
-    const y = Math.floor((e.clientY - rect.top) / cellSize);
-    drawPixel(x, y, selectedColor);
-  };
-
   const handleMouseMove = (e) => {
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = Math.floor((e.clientX - rect.left) / cellSize);
-    const y = Math.floor((e.clientY - rect.top) / cellSize);
+    const scaleX = canvasRef.current.width / rect.width; // Calculate the horizontal scale
+    const scaleY = canvasRef.current.height / rect.height; // Calculate the vertical scale
+
+    const x = Math.floor(((e.clientX - rect.left) * scaleX) / cellSize);
+    const y = Math.floor(((e.clientY - rect.top) * scaleY) / cellSize);
 
     setHoverCell({ x, y });
-
-    if (isDrawing) {
-      drawPixel(x, y, selectedColor);
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDrawing(false);
   };
 
   const handleMouseLeave = () => {
-    setIsDrawing(false);
     setHoverCell({ x: -1, y: -1 });
+  };
+
+  const handleMouseClick = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const scaleX = canvasRef.current.width / rect.width; // Calculate the horizontal scale
+    const scaleY = canvasRef.current.height / rect.height; // Calculate the vertical scale
+
+    const x = Math.floor(((e.clientX - rect.left) * scaleX) / cellSize);
+    const y = Math.floor(((e.clientY - rect.top) * scaleY) / cellSize);
+    drawPixel(x, y, selectedColor);
   };
 
   return (
     <div className="flex flex-col items-center">
       <canvas
-        width={gridSize * cellSize}
-        height={gridSize * cellSize}
         ref={canvasRef}
-        onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
+        onClick={handleMouseClick}
         onMouseLeave={handleMouseLeave}
         className="border border-gray-300 cursor-crosshair"
+        style={{
+          transform: `scale(${scale}) translate(${offset.x}px, ${offset.y}px)`,
+          transformOrigin: "0 0",
+        }}
       />
     </div>
   );

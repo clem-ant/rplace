@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 
 export function useCanvas() {
   const [canvasData, setCanvasData] = useState([]);
-  const [availableColors, setAvailableColors] = useState(config.colors);
 
   useEffect(() => {
     const handleReceiveUpdate = (data) => {
@@ -25,7 +24,6 @@ export function useCanvas() {
 
     // Fetch initial canvas data
     socket.emit("getCanvasData", (initialData) => {
-      console.log("initialData", initialData);
       setCanvasData(initialData);
     });
 
@@ -51,10 +49,16 @@ export function useCanvas() {
     });
   }, []);
 
+  const randomDrawPixel = useCallback(() => {
+    const x = Math.floor(Math.random() * config.gridSize);
+    const y = Math.floor(Math.random() * config.gridSize);
+    drawPixel(x, y, "#" + Math.floor(Math.random() * 16777215).toString(16));
+  }, [drawPixel]);
+
   return {
     canvasData,
-    availableColors,
     drawPixel,
+    randomDrawPixel,
     gridSize: config.gridSize,
   };
 }
