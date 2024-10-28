@@ -5,25 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function UserWelcome() {
   const { data: session, status } = useSession();
-  const [username, setUsername] = useState("");
-  const { connectToCanvas } = useCanvas(); // Hook to connect to the canvas
-
-  useEffect(() => {
-    async function fetchUsername() {
-      if (session?.user?.email) {
-        // Fetch username from API route instead of directly using Prisma
-        const response = await fetch(`/api/user?email=${session.user.email}`);
-        const data = await response.json();
-        if (data.username) {
-          setUsername(data.username);
-          connectToCanvas(data.username); // Connect to canvas with username
-        }
-      }
-    }
-
-    fetchUsername();
-  }, [session, connectToCanvas]);
-
+  console.log(status);
   if (status === "loading") {
     return <div>Loading...</div>;
   }
@@ -33,8 +15,8 @@ export default function UserWelcome() {
   }
 
   return (
-    <div>
-      <h1>Welcome, {username || "User"}!</h1>
+    <div className="flex flex-col items-center justify-center h-screen">
+      <h1>Welcome, {session.user.username}!</h1>
       <p>Enjoy drawing on the canvas!</p>
       {/* Add instructions or controls for the canvas here */}
     </div>

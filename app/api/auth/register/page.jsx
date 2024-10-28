@@ -2,11 +2,19 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import React from "react";
+import register from "./register.action";
 
 const Register = () => {
   async function onSubmit(formData) {
     "use server";
-    console.log(formData);
+    try {
+      const result = await register(formData);
+      if (result.url) {
+        window.location.href = result.url;
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (

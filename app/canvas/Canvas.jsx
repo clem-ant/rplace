@@ -2,22 +2,26 @@
 import { useCanvas } from "@/hooks/useCanvas";
 import { useEffect, useRef, useState } from "react";
 
-const Canvas = ({ selectedColor, mousePosition }) => {
+const Canvas = ({ selectedColor, handleClickPixel, userId }) => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const { canvasData, drawPixel, gridSize, randomDrawPixel } = useCanvas();
   const [hoverCell, setHoverCell] = useState({ x: -1, y: -1 });
-  const [scale, setScale] = useState(1);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-
   const cellSize = 20; // Size of each cell in pixels
-
+  useEffect(() => {
+    canvasData.forEach(({ x, y, color }) => {
+      drawPixelOnCanvas(x, y, color);
+    });
+  }, [canvasData]);
   useEffect(() => {
     const canvas = canvasRef.current;
     canvas.width = gridSize * cellSize;
     canvas.height = gridSize * cellSize;
     const context = canvas.getContext("2d");
     ctxRef.current = context;
+
+    // Clear the canvas before redrawing
+    context.clearRect(0, 0, canvas.width, canvas.height);
 
     context.fillStyle = "white";
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -33,12 +37,11 @@ const Canvas = ({ selectedColor, mousePosition }) => {
       context.stroke();
     }
 
-    // Render stored pixels from canvasData
+    // Draw pixels from canvasData
     canvasData.forEach(({ x, y, color }) => {
       drawPixelOnCanvas(x, y, color);
     });
-    // randomDrawPixel();
-  }, [canvasData, gridSize, hoverCell, scale, offset]);
+  }, [canvasData, gridSize, hoverCell]);
 
   useEffect(() => {
     const context = ctxRef.current;
@@ -75,10 +78,6 @@ const Canvas = ({ selectedColor, mousePosition }) => {
     setHoverCell({ x, y });
   };
 
-  const handleMouseLeave = () => {
-    setHoverCell({ x: -1, y: -1 });
-  };
-
   const handleMouseClick = (e) => {
     const rect = canvasRef.current.getBoundingClientRect();
     const scaleX = canvasRef.current.width / rect.width; // Calculate the horizontal scale
@@ -86,7 +85,8 @@ const Canvas = ({ selectedColor, mousePosition }) => {
 
     const x = Math.floor(((e.clientX - rect.left) * scaleX) / cellSize);
     const y = Math.floor(((e.clientY - rect.top) * scaleY) / cellSize);
-    drawPixel(x, y, selectedColor);
+    drawPixel(x, y, selectedColor, userId);
+    handleClickPixel(x, y, selectedColor);
   };
 
   return (
@@ -95,12 +95,7 @@ const Canvas = ({ selectedColor, mousePosition }) => {
         ref={canvasRef}
         onMouseMove={handleMouseMove}
         onClick={handleMouseClick}
-        onMouseLeave={handleMouseLeave}
         className="border border-gray-300 cursor-crosshair"
-        style={{
-          transform: `scale(${scale}) translate(${offset.x}px, ${offset.y}px)`,
-          transformOrigin: "0 0",
-        }}
       />
     </div>
   );

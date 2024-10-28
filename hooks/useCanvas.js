@@ -1,6 +1,7 @@
 import socket from "@/app/socket";
 import config from "@/config/canvas.json";
 import { useCallback, useEffect, useState } from "react";
+import getPixels from "@/app/canvas/getPixels.action";
 
 export function useCanvas() {
   const [canvasData, setCanvasData] = useState([]);
@@ -22,19 +23,20 @@ export function useCanvas() {
 
     socket.on("receiveUpdate", handleReceiveUpdate);
 
-    // Fetch initial canvas data
-    socket.emit("getCanvasData", (initialData) => {
+    const fetchInitialData = async () => {
+      const initialData = await getPixels();
       setCanvasData(initialData);
-    });
+    };
+
+    fetchInitialData();
 
     return () => {
       socket.off("receiveUpdate", handleReceiveUpdate);
     };
   }, []);
 
-  const drawPixel = useCallback((x, y, color) => {
-    const newPixel = { x, y, color };
-    console.log("newPixel", color);
+  const drawPixel = useCallback((x, y, color, userId) => {
+    const newPixel = { x, y, color, userId };
     socket.emit("drawPixel", newPixel);
     setCanvasData((prevData) => {
       const existingPixelIndex = prevData.findIndex(
@@ -52,7 +54,12 @@ export function useCanvas() {
   const randomDrawPixel = useCallback(() => {
     const x = Math.floor(Math.random() * config.gridSize);
     const y = Math.floor(Math.random() * config.gridSize);
-    drawPixel(x, y, "#" + Math.floor(Math.random() * 16777215).toString(16));
+    drawPixel(
+      x,
+      y,
+      "#" + Math.floor(Math.random() * 16777215).toString(16),
+      "random"
+    );
   }, [drawPixel]);
 
   return {

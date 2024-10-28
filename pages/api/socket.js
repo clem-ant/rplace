@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-
+import createPixel from "@/app/socket/createPixel.action";
 let canvasData = [];
 
 export default function handler(req, res) {
@@ -13,17 +13,23 @@ export default function handler(req, res) {
       socket.on("getClientCount", () => {
         io.emit("updateClientCount", io.engine.clientsCount);
       });
-      socket.on("drawPixel", (data) => {
-        console.log("drawPixel", data);
+      socket.on("drawPixel", async ({ x, y, color, userId }) => {
+        console.log("drawPixel", { x, y, color, userId });
+        const pixel = await createPixel({
+          x,
+          y,
+          color,
+          userId,
+        });
         const existingPixelIndex = canvasData.findIndex(
-          (pixel) => pixel.x === data.x && pixel.y === data.y
+          (pixel) => pixel.x === x && pixel.y === y
         );
         if (existingPixelIndex !== -1) {
-          canvasData[existingPixelIndex] = data;
+          canvasData[existingPixelIndex] = pixel;
         } else {
-          canvasData.push(data);
+          canvasData.push(pixel);
         }
-        socket.broadcast.emit("receiveUpdate", data);
+        socket.broadcast.emit("receiveUpdate", pixel);
       });
       socket.on("getCanvasData", (callback) => {
         callback(canvasData);

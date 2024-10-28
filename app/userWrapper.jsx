@@ -3,7 +3,9 @@ import { useState, useRef } from "react";
 import Canvas from "./canvas/Canvas";
 import UserColors from "./homeUI/UserColors";
 import UserCount from "./homeUI/userCount";
-import UserPlacePixel from "./homeUI/UserPlacePixel";
+import UserPixelInfo from "./homeUI/UserPixelInfo";
+import { SessionProvider, useSession } from "next-auth/react";
+import UserWelcome from "./homeUI/UserWelcome";
 
 export default function UserWrapper() {
   const [selectedColor, setSelectedColor] = useState("#222222"); // Default color
@@ -12,32 +14,18 @@ export default function UserWrapper() {
   const canvasRef = useRef(null);
   const isDragging = useRef(false);
   const lastPosition = useRef({ x: 0, y: 0 });
+  const [clickedPixel, setClickedPixel] = useState({
+    x: -1,
+    y: -1,
+    color: "#222222",
+  });
+  const { data: session } = useSession();
+  const handleClickPixel = (x, y, color) => {
+    setClickedPixel({ x, y, color });
+  };
 
   const handleColorSelect = (color) => {
     setSelectedColor(color);
-  };
-
-  const handleWheel = (event) => {
-    event.preventDefault(); // Prevent the default scroll behavior
-
-    const zoomFactor = 0.1; // Adjust this value to control zoom speed
-    const newScale = scale + (event.deltaY < 0 ? zoomFactor : -zoomFactor);
-
-    // Ensure the scale doesn't go below a certain threshold
-    if (newScale < 0.1) return;
-
-    // Calculate the cursor's position relative to the canvas
-    const rect = canvasRef.current.getBoundingClientRect();
-    const cursorX = (event.clientX - rect.left) / scale;
-    const cursorY = (event.clientY - rect.top) / scale;
-
-    // Calculate the new position to keep the cursor centered
-    setPosition((prev) => ({
-      x: prev.x - cursorX * (newScale - scale) + cursorX * (scale - newScale),
-      y: prev.y - cursorY * (newScale - scale) + cursorY * (scale - newScale),
-    }));
-
-    setScale(newScale);
   };
 
   const handleMouseDown = (event) => {
@@ -47,13 +35,18 @@ export default function UserWrapper() {
 
   const handleMouseMove = (event) => {
     if (!isDragging.current) return;
-    const baseSpeedFactor = 2; // Base speed factor
-    const maxSpeedFactor = 5; // Maximum speed factor limit
-    const speedFactor = Math.min(baseSpeedFactor / scale, maxSpeedFactor); // Adjust speed inversely based on scale
 
-    const dx = (event.clientX - lastPosition.current.x) * speedFactor;
-    const dy = (event.clientY - lastPosition.current.y) * speedFactor;
-    setPosition((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+    // Adjust the drag speed factor to increase more significantly as the scale decreases
+    const dragSpeedFactor = 1 / scale; // This will be 10 when scale is 0.1, and 5 when scale is 0.2
+
+    const deltaX = (event.clientX - lastPosition.current.x) * dragSpeedFactor;
+    const deltaY = (event.clientY - lastPosition.current.y) * dragSpeedFactor;
+
+    setPosition((prev) => ({
+      x: prev.x + deltaX,
+      y: prev.y + deltaY,
+    }));
+
     lastPosition.current = { x: event.clientX, y: event.clientY };
   };
 
@@ -61,34 +54,64 @@ export default function UserWrapper() {
     isDragging.current = false;
   };
 
+  const handleWheel = (event) => {
+    event.preventDefault();
+
+    const zoomFactor = event.deltaY < 0 ? 1.05 : 0.95;
+    const newScale = scale * zoomFactor;
+
+    // Ensure the scale remains within desired bounds
+    setScale(Math.max(0.1, Math.min(1, newScale)));
+
+    const rect = canvasRef.current.getBoundingClientRect();
+    const cursorX = event.clientX - rect.left;
+    const cursorY = event.clientY - rect.top;
+
+    // Calculate the new position based on the zoom
+    const beforeScaleX = (cursorX - position.x) / scale;
+    const beforeScaleY = (cursorY - position.y) / scale;
+    const afterScaleX = (cursorX - position.x) / newScale;
+    const afterScaleY = (cursorY - position.y) / newScale;
+
+    setPosition((prev) => ({
+      x: prev.x + (beforeScaleX - afterScaleX),
+      y: prev.y + (beforeScaleY - afterScaleY),
+    }));
+  };
+
   return (
-    <>
+    <SessionProvider>
       <div
         id="canvas-container"
         className="w-full h-full cursor-grab bg-gray-200"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
-        onWheel={handleWheel}
         onMouseUp={handleMouseUp}
+        onWheel={handleWheel}
       >
         <div
           id="painting"
           className="w-full h-full"
           ref={canvasRef}
-          onMouseLeave={handleMouseUp}
           style={{
             transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
-            transformOrigin: "0 0",
           }}
         >
-          <Canvas selectedColor={selectedColor} mousePosition={position} />
+          <Canvas
+            userId={session?.user?.id}
+            selectedColor={selectedColor}
+            handleClickPixel={handleClickPixel}
+          />
         </div>
       </div>
-      <div className="text-black absolute bottom-0 mx-auto p-4">
+      <div className="absolute top-0 right-0 p-4">
         <span>
           <UserCount />
         </span>
       </div>
+      {clickedPixel.x !== -1 && clickedPixel.y !== -1 && (
+        <UserPixelInfo clickedPixel={clickedPixel} />
+      )}
       <div className="flex flex-row gap-4 justify-center absolute p-4 w-full bottom-0">
         <div className="flex flex-row gap-4">
           <UserColors
@@ -97,6 +120,9 @@ export default function UserWrapper() {
           />
         </div>
       </div>
-    </>
+      <div>
+        <UserWelcome />
+      </div>
+    </SessionProvider>
   );
 }

@@ -1,11 +1,13 @@
-import { getServerSession } from "next-auth";
+"use client";
 import UserWrapper from "./UserWrapper";
+import { SessionProvider } from "next-auth/react";
 
 export default function Home() {
-  const session = getServerSession();
   return (
     <div className="font-[family-name:var(--font-geist-sans)] h-screen overflow-hidden">
-      <UserWrapper />
+      <SessionProvider>
+        <UserWrapper />
+      </SessionProvider>
     </div>
   );
 }
