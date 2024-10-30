@@ -52,12 +52,56 @@ const Canvas = ({ selectedColor, handleClickPixel, setIsModalOpen }) => {
     if (hoverCell.x >= 0 && hoverCell.y >= 0) {
       context.strokeStyle = "black";
       context.lineWidth = 2;
-      context.strokeRect(
-        hoverCell.x * cellSize,
-        hoverCell.y * cellSize,
-        cellSize,
-        cellSize
+      // Dessiner les coins du carré
+      const cornerSize = 5;
+      context.beginPath();
+      context.moveTo(hoverCell.x * cellSize, hoverCell.y * cellSize);
+      context.lineTo(
+        hoverCell.x * cellSize + cornerSize,
+        hoverCell.y * cellSize
       );
+      context.moveTo(hoverCell.x * cellSize, hoverCell.y * cellSize);
+      context.lineTo(
+        hoverCell.x * cellSize,
+        hoverCell.y * cellSize + cornerSize
+      );
+      context.moveTo(hoverCell.x * cellSize + cellSize, hoverCell.y * cellSize);
+      context.lineTo(
+        hoverCell.x * cellSize + cellSize - cornerSize,
+        hoverCell.y * cellSize
+      );
+      context.moveTo(hoverCell.x * cellSize + cellSize, hoverCell.y * cellSize);
+      context.lineTo(
+        hoverCell.x * cellSize + cellSize,
+        hoverCell.y * cellSize + cornerSize
+      );
+      context.moveTo(hoverCell.x * cellSize, hoverCell.y * cellSize + cellSize);
+      context.lineTo(
+        hoverCell.x * cellSize + cornerSize,
+        hoverCell.y * cellSize + cellSize
+      );
+      context.moveTo(hoverCell.x * cellSize, hoverCell.y * cellSize + cellSize);
+      context.lineTo(
+        hoverCell.x * cellSize,
+        hoverCell.y * cellSize + cellSize - cornerSize
+      );
+      context.moveTo(
+        hoverCell.x * cellSize + cellSize,
+        hoverCell.y * cellSize + cellSize
+      );
+      context.lineTo(
+        hoverCell.x * cellSize + cellSize - cornerSize,
+        hoverCell.y * cellSize + cellSize
+      );
+      context.moveTo(
+        hoverCell.x * cellSize + cellSize,
+        hoverCell.y * cellSize + cellSize
+      );
+      context.lineTo(
+        hoverCell.x * cellSize + cellSize,
+        hoverCell.y * cellSize + cellSize - cornerSize
+      );
+      context.stroke();
     }
   }, [hoverCell]);
 

@@ -34,7 +34,7 @@ export default function UserModalNotConnected({ isModalOpen, setIsModalOpen }) {
             >
               connecter
             </span>{" "}
-            pour placer un pixel sur le canevas.
+            pour placer un pixel sur la toile.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
