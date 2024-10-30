@@ -2,7 +2,6 @@
 import prisma from "@/util/client";
 
 export default async function create(data) {
-  console.log("data", data);
   try {
     const pixel = await prisma.pixel.upsert({
       where: {

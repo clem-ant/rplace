@@ -5,6 +5,7 @@ import getPixels from "@/app/canvas/getPixels.action";
 
 export function useCanvas() {
   const [canvasData, setCanvasData] = useState([]);
+  const [initialData, setInitialData] = useState([]);
 
   useEffect(() => {
     const handleReceiveUpdate = (data) => {
@@ -24,8 +25,8 @@ export function useCanvas() {
     socket.on("receiveUpdate", handleReceiveUpdate);
 
     const fetchInitialData = async () => {
-      const initialData = await getPixels();
-      setCanvasData(initialData);
+      const data = await getPixels();
+      setInitialData(data);
     };
 
     fetchInitialData();
@@ -34,6 +35,12 @@ export function useCanvas() {
       socket.off("receiveUpdate", handleReceiveUpdate);
     };
   }, []);
+
+  useEffect(() => {
+    if (initialData.length > 0) {
+      setCanvasData(initialData);
+    }
+  }, [initialData]);
 
   const drawPixel = useCallback((x, y, color, userId) => {
     const newPixel = { x, y, color, userId };

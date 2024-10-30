@@ -1,41 +1,39 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/util/client";
-
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import GoogleProvider from "next-auth/providers/google";
 export const authOptions = {
-  providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        username: { label: "Username", type: "text" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        // Check if the user exists in the database
-        const user = await prisma.user.findUnique({
-          where: {
-            username: credentials.username,
-          },
-        });
-
-        if (!user) {
-          // If the user doesn't exist, create a new user in the database
-          const newUser = await prisma.user.create({
-            data: {
-              username: credentials.username,
-              password: credentials.password,
-            },
-          });
-          return newUser;
-        }
-
-        // If the user exists, return the user object
-        return user;
-      },
-    }),
-  ],
   session: {
     strategy: "jwt",
   },
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
+    }),
+  ],
+  callbacks: {
+    session: async ({ session, token }) => {
+      if (token && token.sub) {
+        session.user.id = token.sub;
+      }
+      return session;
+    },
+    async signIn({ user, account, profile }) {
+      if (account.provider === "google") {
+        user.pixelNumber = 0;
+      }
+      return true;
+    },
+  },
+  adapter: PrismaAdapter(prisma),
 };
 
 export default authOptions;

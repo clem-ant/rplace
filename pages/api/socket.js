@@ -14,7 +14,6 @@ export default function handler(req, res) {
         io.emit("updateClientCount", io.engine.clientsCount);
       });
       socket.on("drawPixel", async ({ x, y, color, userId }) => {
-        console.log("drawPixel", { x, y, color, userId });
         const pixel = await createPixel({
           x,
           y,

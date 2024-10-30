@@ -1,11 +1,15 @@
 "use client";
 import { useCanvas } from "@/hooks/useCanvas";
+import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
+import getPixelsCount from "./getPixels.action";
 
-const Canvas = ({ selectedColor, handleClickPixel, userId }) => {
+const Canvas = ({ selectedColor, handleClickPixel, setIsModalOpen }) => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
-  const { canvasData, drawPixel, gridSize, randomDrawPixel } = useCanvas();
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const { canvasData, drawPixel, gridSize } = useCanvas();
   const [hoverCell, setHoverCell] = useState({ x: -1, y: -1 });
   const cellSize = 20; // Size of each cell in pixels
   useEffect(() => {
@@ -78,7 +82,16 @@ const Canvas = ({ selectedColor, handleClickPixel, userId }) => {
     setHoverCell({ x, y });
   };
 
-  const handleMouseClick = (e) => {
+  const handleMouseClick = async (e) => {
+    if (!userId) {
+      setIsModalOpen(true);
+      return;
+    }
+    const pixelsCount = await getPixelsCount({ userId });
+    if (pixelsCount.pixelNumber <= 0) {
+      setIsModalOpen(true);
+      return;
+    }
     const rect = canvasRef.current.getBoundingClientRect();
     const scaleX = canvasRef.current.width / rect.width; // Calculate the horizontal scale
     const scaleY = canvasRef.current.height / rect.height; // Calculate the vertical scale

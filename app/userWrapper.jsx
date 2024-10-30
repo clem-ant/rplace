@@ -4,8 +4,9 @@ import Canvas from "./canvas/Canvas";
 import UserColors from "./homeUI/UserColors";
 import UserCount from "./homeUI/userCount";
 import UserPixelInfo from "./homeUI/UserPixelInfo";
-import { SessionProvider, useSession } from "next-auth/react";
-import UserWelcome from "./homeUI/UserWelcome";
+import { SessionProvider } from "next-auth/react";
+import UserModalNotConnected from "./homeUI/UserModalNotConnected";
+import LoginBtn from "@/components/login-btn";
 
 export default function UserWrapper() {
   const [selectedColor, setSelectedColor] = useState("#222222"); // Default color
@@ -14,12 +15,13 @@ export default function UserWrapper() {
   const canvasRef = useRef(null);
   const isDragging = useRef(false);
   const lastPosition = useRef({ x: 0, y: 0 });
+
   const [clickedPixel, setClickedPixel] = useState({
     x: -1,
     y: -1,
     color: "#222222",
   });
-  const { data: session } = useSession();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const handleClickPixel = (x, y, color) => {
     setClickedPixel({ x, y, color });
   };
@@ -55,8 +57,6 @@ export default function UserWrapper() {
   };
 
   const handleWheel = (event) => {
-    event.preventDefault();
-
     const zoomFactor = event.deltaY < 0 ? 1.05 : 0.95;
     const newScale = scale * zoomFactor;
 
@@ -81,6 +81,11 @@ export default function UserWrapper() {
 
   return (
     <SessionProvider>
+      <UserModalNotConnected
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+      />
+
       <div
         id="canvas-container"
         className="w-full h-full cursor-grab bg-gray-200"
@@ -94,25 +99,28 @@ export default function UserWrapper() {
           className="w-full h-full"
           ref={canvasRef}
           style={{
-            transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
+            transform: `scale(${scale}) translate(${position.x}px, ${position.y}px) `,
           }}
         >
           <Canvas
-            userId={session?.user?.id}
             selectedColor={selectedColor}
             handleClickPixel={handleClickPixel}
+            setIsModalOpen={setIsModalOpen}
           />
         </div>
-      </div>
-      <div className="absolute top-0 right-0 p-4">
-        <span>
-          <UserCount />
-        </span>
       </div>
       {clickedPixel.x !== -1 && clickedPixel.y !== -1 && (
         <UserPixelInfo clickedPixel={clickedPixel} />
       )}
+      <div className="absolute top-0 right-0 p-4 z-10">
+        <LoginBtn />
+      </div>
       <div className="flex flex-row gap-4 justify-center absolute p-4 w-full bottom-0">
+        <div className="absolute bottom-0 left-0 p-4">
+          <span>
+            <UserCount />
+          </span>
+        </div>
         <div className="flex flex-row gap-4">
           <UserColors
             onColorSelect={handleColorSelect}
@@ -120,9 +128,8 @@ export default function UserWrapper() {
           />
         </div>
       </div>
-      <div>
-        <UserWelcome />
-      </div>
+
+      <div className="absolute top-0 left-0 p-4"></div>
     </SessionProvider>
   );
 }
