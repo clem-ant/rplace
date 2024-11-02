@@ -1,25 +1,50 @@
-import React from "react";
+import getPixel from "../canvas/getPixel.action";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-export default function UserPixelInfo({ clickedPixel, pixelData }) {
+import React, { useEffect, useState } from "react";
+
+export default function UserPixelInfo({ selectedCell }) {
+  const [pixel, setPixel] = useState(null);
+
+  useEffect(() => {
+    if (selectedCell) {
+      const fetchPixel = async () => {
+        const pixelData = await getPixel(selectedCell.x, selectedCell.y);
+        setPixel(pixelData);
+      };
+      fetchPixel();
+    }
+  }, [selectedCell]);
+
   return (
-    <div className="flex flex-col items-center justify-center absolute bottom-0 right-0 p-4">
-      <div className="flex flex-row items-center justify-center gap-2">
-        {pixelData && (
-          <>
-            <div
-              className="w-4 h-4 rounded-full"
-              style={{ backgroundColor: clickedPixel.color }}
-            ></div>
-            <h4>Pixel : </h4>
-            {/* <p>Placed by : {pixelData.user}</p>
-            <p>Placed at : {pixelData.timestamp}</p> */}
-            <h4>Coordinates : </h4>
-            <h1>
-              {clickedPixel.x}, {clickedPixel.y}
-            </h1>
-          </>
-        )}
-      </div>
-    </div>
+    <>
+      {selectedCell && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Information du pixel</CardTitle>
+            <CardDescription>
+              Informations sur le pixel à la position sélectionnée
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>
+              Coordonnées : {selectedCell.x}, {selectedCell.y}
+            </p>
+            {pixel && (
+              <p>
+                Pixel Data: {pixel.updatedAt.toLocaleString()} -{" "}
+                {pixel.user.email}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </>
   );
 }

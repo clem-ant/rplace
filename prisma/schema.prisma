@@ -38,6 +38,17 @@ model Pixel {
 
 }
 
+model PixelHistory {
+  id        String   @default(cuid()) @id
+  x         Int
+  y         Int
+  color     String
+  userId    String
+  timestamp DateTime @default(now())
+
+  @@index([x, y])
+}
+
 model Account {
   id                       String  @id @default(cuid())
   userId                   String  @unique

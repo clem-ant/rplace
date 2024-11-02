@@ -18,6 +18,17 @@ export default async function create(data) {
         userId: data.userId,
       },
     });
+
+    // Enregistrer l'historique du pixel
+    await prisma.pixelHistory.create({
+      data: {
+        x: data.x,
+        y: data.y,
+        color: data.color,
+        userId: data.userId,
+      },
+    });
+
     return pixel;
   } catch (error) {
     console.error(error);

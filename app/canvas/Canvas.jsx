@@ -4,19 +4,26 @@ import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import getPixelsCount from "./getPixels.action";
 
-const Canvas = ({ selectedColor, handleClickPixel, setIsModalOpen }) => {
+const Canvas = ({
+  selectedColor,
+  setIsModalOpen,
+  selectedCell,
+  handleSelectedCell,
+}) => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const { data: session } = useSession();
   const userId = session?.user?.id;
   const { canvasData, drawPixel, gridSize } = useCanvas();
   const [hoverCell, setHoverCell] = useState({ x: -1, y: -1 });
+
   const cellSize = 20; // Size of each cell in pixels
   useEffect(() => {
     canvasData.forEach(({ x, y, color }) => {
       drawPixelOnCanvas(x, y, color);
     });
   }, [canvasData]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     canvas.width = gridSize * cellSize;
@@ -45,14 +52,14 @@ const Canvas = ({ selectedColor, handleClickPixel, setIsModalOpen }) => {
     canvasData.forEach(({ x, y, color }) => {
       drawPixelOnCanvas(x, y, color);
     });
-  }, [canvasData, gridSize, hoverCell]);
+    drawSelectedCell();
+  }, [canvasData, gridSize, hoverCell, selectedCell, selectedColor]);
 
   useEffect(() => {
     const context = ctxRef.current;
     if (hoverCell.x >= 0 && hoverCell.y >= 0) {
       context.strokeStyle = "black";
       context.lineWidth = 2;
-      // Dessiner les coins du carré
       const cornerSize = 5;
       context.beginPath();
       context.moveTo(hoverCell.x * cellSize, hoverCell.y * cellSize);
@@ -105,6 +112,20 @@ const Canvas = ({ selectedColor, handleClickPixel, setIsModalOpen }) => {
     }
   }, [hoverCell]);
 
+  const drawSelectedCell = () => {
+    const context = ctxRef.current;
+    if (selectedCell.x >= 0 && selectedCell.y >= 0) {
+      context.strokeStyle = selectedColor; // Different color for selected cell
+      context.lineWidth = 2;
+      context.strokeRect(
+        selectedCell.x * cellSize,
+        selectedCell.y * cellSize,
+        cellSize,
+        cellSize
+      );
+    }
+  };
+
   const drawPixelOnCanvas = (x, y, color) => {
     const ctx = ctxRef.current;
     if (!ctx) {
@@ -126,7 +147,17 @@ const Canvas = ({ selectedColor, handleClickPixel, setIsModalOpen }) => {
     setHoverCell({ x, y });
   };
 
-  const handleMouseClick = async (e) => {
+  const handleMouseClick = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const scaleX = canvasRef.current.width / rect.width;
+    const scaleY = canvasRef.current.height / rect.height;
+
+    const x = Math.floor(((e.clientX - rect.left) * scaleX) / cellSize);
+    const y = Math.floor(((e.clientY - rect.top) * scaleY) / cellSize);
+
+    handleSelectedCell(x, y);
+  };
+  const confirmPixelPlacement = async () => {
     if (!userId) {
       setIsModalOpen(true);
       return;
@@ -136,14 +167,7 @@ const Canvas = ({ selectedColor, handleClickPixel, setIsModalOpen }) => {
       setIsModalOpen(true);
       return;
     }
-    const rect = canvasRef.current.getBoundingClientRect();
-    const scaleX = canvasRef.current.width / rect.width; // Calculate the horizontal scale
-    const scaleY = canvasRef.current.height / rect.height; // Calculate the vertical scale
-
-    const x = Math.floor(((e.clientX - rect.left) * scaleX) / cellSize);
-    const y = Math.floor(((e.clientY - rect.top) * scaleY) / cellSize);
-    drawPixel(x, y, selectedColor, userId);
-    handleClickPixel(x, y, selectedColor);
+    drawPixel(cursorPosition.x, cursorPosition.y, selectedColor, userId);
   };
 
   return (

@@ -15,16 +15,13 @@ export default function UserWrapper() {
   const canvasRef = useRef(null);
   const isDragging = useRef(false);
   const lastPosition = useRef({ x: 0, y: 0 });
-
-  const [clickedPixel, setClickedPixel] = useState({
+  const [selectedCell, setSelectedCell] = useState({
     x: -1,
     y: -1,
-    color: "#222222",
+    color: "",
   });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const handleClickPixel = (x, y, color) => {
-    setClickedPixel({ x, y, color });
-  };
 
   const handleColorSelect = (color) => {
     setSelectedColor(color);
@@ -33,6 +30,10 @@ export default function UserWrapper() {
   const handleMouseDown = (event) => {
     isDragging.current = true;
     lastPosition.current = { x: event.clientX, y: event.clientY };
+  };
+
+  const handleSelectedCell = (x, y) => {
+    setSelectedCell({ x, y });
   };
 
   const handleMouseMove = (event) => {
@@ -62,21 +63,6 @@ export default function UserWrapper() {
 
     // Ensure the scale remains within desired bounds
     setScale(Math.max(0.1, Math.min(1, newScale)));
-
-    const rect = canvasRef.current.getBoundingClientRect();
-    const cursorX = event.clientX - rect.left;
-    const cursorY = event.clientY - rect.top;
-
-    // Calculate the new position based on the zoom
-    const beforeScaleX = (cursorX - position.x) / scale;
-    const beforeScaleY = (cursorY - position.y) / scale;
-    const afterScaleX = (cursorX - position.x) / newScale;
-    const afterScaleY = (cursorY - position.y) / newScale;
-
-    setPosition((prev) => ({
-      x: prev.x + (beforeScaleX - afterScaleX),
-      y: prev.y + (beforeScaleY - afterScaleY),
-    }));
   };
 
   return (
@@ -104,14 +90,13 @@ export default function UserWrapper() {
         >
           <Canvas
             selectedColor={selectedColor}
-            handleClickPixel={handleClickPixel}
             setIsModalOpen={setIsModalOpen}
+            selectedCell={selectedCell}
+            handleSelectedCell={handleSelectedCell}
           />
         </div>
       </div>
-      {clickedPixel.x !== -1 && clickedPixel.y !== -1 && (
-        <UserPixelInfo clickedPixel={clickedPixel} />
-      )}
+
       <div className="absolute top-0 right-0 p-4 z-10">
         <LoginBtn />
       </div>
@@ -129,7 +114,11 @@ export default function UserWrapper() {
         </div>
       </div>
 
-      <div className="absolute top-0 left-0 p-4"></div>
+      <div className="absolute bottom-0 right-0 p-4">
+        {selectedCell.x !== -1 && selectedCell.y !== -1 && (
+          <UserPixelInfo selectedCell={selectedCell} />
+        )}
+      </div>
     </SessionProvider>
   );
 }
