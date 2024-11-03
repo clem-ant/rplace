@@ -1,6 +1,7 @@
 import LoginBtn from "@/components/login-btn";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 export default function UserInformation() {
@@ -20,11 +21,24 @@ export default function UserInformation() {
           </div>
           <div className="flex flex-col gap-4 justify-center items-center">
             {session?.user?.name && (
-              <p>
-                {session?.user?.pixelCount} pixel
-                {session?.user?.pixelCount > 1 ? "s" : ""} disponible
-                {session?.user?.pixelCount > 1 ? "s" : ""}
-              </p>
+              <>
+                <p>
+                  <span className="font-bold">{session?.user?.pixelCount}</span>{" "}
+                  pixel
+                  {session?.user?.pixelCount > 1 ? "s" : ""} disponible
+                  {session?.user?.pixelCount > 1 ? "s" : ""}
+                </p>
+                {session?.user?.pixelCount <= 0 && (
+                  <p>
+                    <Link
+                      href="/recharge"
+                      className="text-primary hover:underline transition-all duration-100"
+                    >
+                      Comment recharger ?
+                    </Link>
+                  </p>
+                )}
+              </>
             )}
             <LoginBtn />
           </div>

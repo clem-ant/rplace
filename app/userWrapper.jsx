@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Canvas from "./canvas/Canvas";
 import UserColors from "./homeUI/UserColors";
 import UserCount from "./homeUI/userCount";
@@ -86,7 +86,7 @@ export default function UserWrapper() {
 
       <div
         id="canvas-container"
-        className="w-full h-full cursor-grab bg-primary/20"
+        className="w-full h-full cursor-grab bg-primary/20  "
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
