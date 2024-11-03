@@ -168,6 +168,7 @@ const Canvas = ({
       setIsModalOpen(true);
       return;
     }
+
     drawPixel(selectedCell.x, selectedCell.y, selectedColor, userId);
   };
 

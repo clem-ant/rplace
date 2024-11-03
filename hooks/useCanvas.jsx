@@ -2,6 +2,7 @@ import socket from "@/app/socket";
 import config from "@/config/canvas.json";
 import { useCallback, useEffect, useState } from "react";
 import getPixels from "@/app/canvas/getPixels.action";
+import toast from "react-hot-toast";
 
 export function useCanvas() {
   const [canvasData, setCanvasData] = useState([]);
@@ -42,20 +43,35 @@ export function useCanvas() {
     }
   }, [initialData]);
 
-  const drawPixel = useCallback((x, y, color, userId) => {
+  const drawPixel = useCallback(async (x, y, color, userId) => {
     const newPixel = { x, y, color, userId };
-    socket.emit("drawPixel", newPixel);
-    setCanvasData((prevData) => {
-      const existingPixelIndex = prevData.findIndex(
-        (pixel) => pixel.x === x && pixel.y === y
-      );
-      if (existingPixelIndex !== -1) {
-        const newData = [...prevData];
-        newData[existingPixelIndex] = newPixel;
-        return newData;
-      }
-      return [...prevData, newPixel];
-    });
+
+    try {
+      const response = await new Promise((resolve, reject) => {
+        socket.emit("drawPixel", newPixel, (response) => {
+          if (response.error) {
+            reject(response.error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      setCanvasData((prevData) => {
+        const existingPixelIndex = prevData.findIndex(
+          (pixel) => pixel.x === x && pixel.y === y
+        );
+        if (existingPixelIndex !== -1) {
+          const newData = [...prevData];
+          newData[existingPixelIndex] = newPixel;
+          return newData;
+        }
+        return [...prevData, newPixel];
+      });
+    } catch (error) {
+      toast.error(error);
+      return; // Breaks out of the function if there's an error
+    }
   }, []);
 
   const randomDrawPixel = useCallback(() => {

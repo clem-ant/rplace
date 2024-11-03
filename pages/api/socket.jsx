@@ -11,13 +11,20 @@ export default function handler(req, res) {
     res.socket.server.io = io;
     io.on("connection", (socket) => {
       io.emit("updateClientCount", io.engine.clientsCount);
+
       socket.on("getClientCount", () => {
         io.emit("updateClientCount", io.engine.clientsCount);
       });
-      socket.on("drawPixel", async ({ x, y, color, userId }) => {
+
+      socket.on("disconnect", () => {
+        io.emit("updateClientCount", io.engine.clientsCount);
+      });
+
+      socket.on("drawPixel", async ({ x, y, color, userId }, callback) => {
         const pixelCount = await getPixelsCount({ userId });
         if (pixelCount.pixelCount <= 0) {
-          return res.status(400).json({ error: "Not enough pixels" });
+          callback({ error: "Vous n'avez plus de pixels" });
+          return;
         }
         const pixel = await createPixel({
           x,
@@ -34,12 +41,10 @@ export default function handler(req, res) {
           canvasData.push(pixel);
         }
         socket.broadcast.emit("receiveUpdate", pixel);
+        callback({ success: true });
       });
       socket.on("getCanvasData", (callback) => {
         callback(canvasData);
-      });
-      socket.on("disconnect", () => {
-        io.emit("updateClientCount", io.engine.clientsCount);
       });
     });
   }
