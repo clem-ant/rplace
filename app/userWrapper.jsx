@@ -6,7 +6,8 @@ import UserCount from "./homeUI/userCount";
 import UserPixelInfo from "./homeUI/UserPixelInfo";
 import { SessionProvider } from "next-auth/react";
 import UserModalNotConnected from "./homeUI/UserModalNotConnected";
-import LoginBtn from "@/components/login-btn";
+import UserInformation from "./homeUI/UserInformation";
+import UserModalNotEnoughPixels from "./homeUI/UserModalNotEnoughtPixels";
 
 export default function UserWrapper() {
   const [selectedColor, setSelectedColor] = useState("#222222"); // Default color
@@ -20,8 +21,10 @@ export default function UserWrapper() {
     y: -1,
     color: "",
   });
-
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalNotEnoughPixelsOpen, setIsModalNotEnoughPixelsOpen] =
+    useState(false);
+  const [isButtonPressed, setIsButtonPressed] = useState(false);
 
   const handleColorSelect = (color) => {
     setSelectedColor(color);
@@ -34,6 +37,11 @@ export default function UserWrapper() {
 
   const handleSelectedCell = (x, y) => {
     setSelectedCell({ x, y });
+  };
+
+  const handleButtonPress = () => {
+    setIsButtonPressed(true);
+    setTimeout(() => setIsButtonPressed(false), 100);
   };
 
   const handleMouseMove = (event) => {
@@ -71,6 +79,10 @@ export default function UserWrapper() {
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
       />
+      <UserModalNotEnoughPixels
+        isModalOpen={isModalNotEnoughPixelsOpen}
+        setIsModalOpen={setIsModalNotEnoughPixelsOpen}
+      />
 
       <div
         id="canvas-container"
@@ -93,30 +105,32 @@ export default function UserWrapper() {
             setIsModalOpen={setIsModalOpen}
             selectedCell={selectedCell}
             handleSelectedCell={handleSelectedCell}
+            isButtonPressed={isButtonPressed}
           />
         </div>
       </div>
 
       <div className="absolute top-0 right-0 p-4 z-10">
-        <LoginBtn />
+        <UserInformation />
       </div>
-      <div className="flex flex-row gap-4 justify-center absolute p-4 w-full bottom-0">
-        <div className="absolute bottom-0 left-0 p-4">
-          <span>
-            <UserCount />
-          </span>
-        </div>
-        <div className="flex flex-row gap-4">
-          <UserColors
-            onColorSelect={handleColorSelect}
-            selectedColor={selectedColor}
-          />
-        </div>
+      <div className="absolute bottom-0 left-0 p-4">
+        <span>
+          <UserCount />
+        </span>
+      </div>
+      <div className="flex flex-wrap gap-2 w-fit fixed bottom-0 left-1/2 transform -translate-x-1/2 p-4">
+        <UserColors
+          onColorSelect={handleColorSelect}
+          selectedColor={selectedColor}
+        />
       </div>
 
       <div className="absolute bottom-0 right-0 p-4">
         {selectedCell.x !== -1 && selectedCell.y !== -1 && (
-          <UserPixelInfo selectedCell={selectedCell} />
+          <UserPixelInfo
+            buttonPress={handleButtonPress}
+            selectedCell={selectedCell}
+          />
         )}
       </div>
     </SessionProvider>

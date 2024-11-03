@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import createPixel from "@/app/socket/createPixel.action";
+import getPixelsCount from "@/app/canvas/getPIxelCount.action";
 let canvasData = [];
 
 export default function handler(req, res) {
@@ -14,6 +15,10 @@ export default function handler(req, res) {
         io.emit("updateClientCount", io.engine.clientsCount);
       });
       socket.on("drawPixel", async ({ x, y, color, userId }) => {
+        const pixelCount = await getPixelsCount({ userId });
+        if (pixelCount.pixelCount <= 0) {
+          return res.status(400).json({ error: "Not enough pixels" });
+        }
         const pixel = await createPixel({
           x,
           y,

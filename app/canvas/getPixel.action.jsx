@@ -10,9 +10,14 @@ export default async function getPixel(x, y) {
       user: {
         select: {
           email: true,
+          name: true,
         },
       },
     },
   });
+  if (pixel && pixel.user && pixel.user.name) {
+    const [firstName, lastName] = pixel.user.name.split(" ");
+    pixel.user.name = `${firstName}.${lastName.charAt(0)}`;
+  }
   return pixel;
 }

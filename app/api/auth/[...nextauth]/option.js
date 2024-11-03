@@ -20,16 +20,19 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    session: async ({ session, token }) => {
+    session: async ({ session, token, user }) => {
       if (token && token.sub) {
         session.user.id = token.sub;
+      }
+      if (user && user.pixelCount !== undefined) {
+        session.user.pixelCount = user.pixelCount;
+      } else {
+        session.user.pixelCount = 0;
       }
       return session;
     },
     async signIn({ user, account, profile }) {
-      if (account.provider === "google") {
-        user.pixelNumber = 0;
-      }
+      user.pixelCount = 0;
       return true;
     },
   },

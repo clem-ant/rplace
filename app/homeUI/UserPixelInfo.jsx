@@ -1,15 +1,10 @@
+"use client";
+import { Button } from "@/components/ui/button";
 import getPixel from "../canvas/getPixel.action";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+import { Card, CardContent } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 
-export default function UserPixelInfo({ selectedCell }) {
+export default function UserPixelInfo({ buttonPress, selectedCell }) {
   const [pixel, setPixel] = useState(null);
 
   useEffect(() => {
@@ -22,26 +17,33 @@ export default function UserPixelInfo({ selectedCell }) {
     }
   }, [selectedCell]);
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.code === "Space") {
+        event.preventDefault(); // Prevent default spacebar scrolling behavior
+        buttonPress();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [buttonPress]);
+
   return (
     <>
       {selectedCell && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Information du pixel</CardTitle>
-            <CardDescription>
-              Informations sur le pixel à la position sélectionnée
-            </CardDescription>
-          </CardHeader>
+        <Card className="bg-primary">
           <CardContent>
-            <p>
-              Coordonnées : {selectedCell.x}, {selectedCell.y}
-            </p>
-            {pixel && (
-              <p>
-                Pixel Data: {pixel.updatedAt.toLocaleString()} -{" "}
-                {pixel.user.email}
-              </p>
-            )}
+            <div className="flex flex-row items-center justify-center gap-2">
+              x : {selectedCell.x}, y : {selectedCell.y}
+            </div>
+            {pixel && <p>Dessiné par {pixel.user.name}</p>}
+            <Button onClick={buttonPress} variant="outline">
+              Placer le pixel [ESPACE]
+            </Button>
           </CardContent>
         </Card>
       )}

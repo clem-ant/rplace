@@ -3,12 +3,13 @@ import { useCanvas } from "@/hooks/useCanvas";
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import getPixelsCount from "./getPixels.action";
-
+import config from "@/config/canvas.json";
 const Canvas = ({
   selectedColor,
   setIsModalOpen,
   selectedCell,
   handleSelectedCell,
+  isButtonPressed,
 }) => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
@@ -17,7 +18,7 @@ const Canvas = ({
   const { canvasData, drawPixel, gridSize } = useCanvas();
   const [hoverCell, setHoverCell] = useState({ x: -1, y: -1 });
 
-  const cellSize = 20; // Size of each cell in pixels
+  const cellSize = config.cellSize; // Size of each cell in pixels
   useEffect(() => {
     canvasData.forEach(({ x, y, color }) => {
       drawPixelOnCanvas(x, y, color);
@@ -167,8 +168,14 @@ const Canvas = ({
       setIsModalOpen(true);
       return;
     }
-    drawPixel(cursorPosition.x, cursorPosition.y, selectedColor, userId);
+    drawPixel(selectedCell.x, selectedCell.y, selectedColor, userId);
   };
+
+  useEffect(() => {
+    if (isButtonPressed) {
+      confirmPixelPlacement();
+    }
+  }, [isButtonPressed]);
 
   return (
     <div className="flex flex-col items-center">

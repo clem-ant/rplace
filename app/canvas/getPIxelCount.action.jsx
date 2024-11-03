@@ -7,7 +7,7 @@ export default async function getPixelsCount({ userId }) {
       id: userId,
     },
     select: {
-      pixelNumber: true,
+      pixelCount: true,
     },
   });
   return pixels;

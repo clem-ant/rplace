@@ -1,7 +1,7 @@
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Button } from "./ui/button";
 
-export default function LoginBtn() {
+export default function LoginBtn({ setIsModalOpen }) {
   const { data: session } = useSession();
   if (session) {
     return (

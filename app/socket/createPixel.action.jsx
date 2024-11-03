@@ -1,7 +1,7 @@
 "use server";
 import prisma from "@/util/client";
 
-export default async function create(data) {
+export default async function createPixel(data) {
   try {
     const pixel = await prisma.pixel.upsert({
       where: {
@@ -27,6 +27,12 @@ export default async function create(data) {
         color: data.color,
         userId: data.userId,
       },
+    });
+
+    // Update the user's pixel count
+    await prisma.user.update({
+      where: { id: data.userId },
+      data: { pixelCount: { decrement: 1 } },
     });
 
     return pixel;

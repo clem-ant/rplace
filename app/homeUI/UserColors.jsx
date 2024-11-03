@@ -9,7 +9,7 @@ const UserColors = ({ onColorSelect, selectedColor }) => {
   };
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <>
       {colors.map((color) => (
         <div
           key={color}
@@ -27,7 +27,7 @@ const UserColors = ({ onColorSelect, selectedColor }) => {
           ></div>
         </div>
       ))}
-    </div>
+    </>
   );
 };
 
