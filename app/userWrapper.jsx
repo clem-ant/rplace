@@ -11,7 +11,7 @@ import UserModalNotEnoughPixels from "./homeUI/UserModalNotEnoughtPixels";
 
 export default function UserWrapper() {
   const [selectedColor, setSelectedColor] = useState("#222222"); // Default color
-  const [scale, setScale] = useState(0.2);
+  const [scale, setScale] = useState(0.1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const canvasRef = useRef(null);
   const isDragging = useRef(false);
@@ -86,7 +86,7 @@ export default function UserWrapper() {
 
       <div
         id="canvas-container"
-        className="w-full h-full cursor-grab bg-gray-200"
+        className="w-full h-full cursor-grab bg-primary/20"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}

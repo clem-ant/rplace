@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import getPixel from "../canvas/getPixel.action";
-import { Card, CardContent } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 
 export default function UserPixelInfo({ buttonPress, selectedCell }) {
@@ -35,17 +34,17 @@ export default function UserPixelInfo({ buttonPress, selectedCell }) {
   return (
     <>
       {selectedCell && (
-        <Card className="bg-primary">
-          <CardContent>
-            <div className="flex flex-row items-center justify-center gap-2">
-              x : {selectedCell.x}, y : {selectedCell.y}
-            </div>
-            {pixel && <p>Dessiné par {pixel.user.name}</p>}
-            <Button onClick={buttonPress} variant="outline">
-              Placer le pixel [ESPACE]
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col gap-2 backdrop-blur-xl bg-primary/20 border-none shadow-xl p-4 rounded-xl justify-center items-center">
+          <div>
+            x : {selectedCell.x}, y : {selectedCell.y}
+          </div>
+          {pixel && (
+            <p>
+              Dessiné par <span className="font-bold">{pixel.user.name}</span>
+            </p>
+          )}
+          <Button onClick={buttonPress}>Placer le pixel [ESPACE]</Button>
+        </div>
       )}
     </>
   );

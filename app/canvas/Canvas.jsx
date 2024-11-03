@@ -169,7 +169,15 @@ const Canvas = ({
       return;
     }
 
-    drawPixel(selectedCell.x, selectedCell.y, selectedColor, userId);
+    const result = await drawPixel(
+      selectedCell.x,
+      selectedCell.y,
+      selectedColor,
+      userId
+    );
+    if (result) {
+      session.user.pixelCount = session.user.pixelCount - 1;
+    }
   };
 
   useEffect(() => {

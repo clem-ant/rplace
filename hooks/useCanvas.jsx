@@ -68,9 +68,11 @@ export function useCanvas() {
         }
         return [...prevData, newPixel];
       });
+
+      return true;
     } catch (error) {
       toast.error(error);
-      return; // Breaks out of the function if there's an error
+      return false;
     }
   }, []);
 

@@ -11,7 +11,7 @@ export default function UserCount() {
     socket.emit("getClientCount");
   }, []);
   return (
-    <div className="text-white bg-primary p-3 rounded-full flex items-center">
+    <div className="bg-primary/20 backdrop-blur-xl p-3 rounded-full flex items-center">
       <svg
         width="10"
         height="10"

@@ -1,4 +1,3 @@
-import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/util/client";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import GoogleProvider from "next-auth/providers/google";
@@ -23,12 +22,17 @@ export const authOptions = {
     session: async ({ session, token, user }) => {
       if (token && token.sub) {
         session.user.id = token.sub;
+
+        // Fetch the pixelCount from the database
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: { pixelCount: true },
+        });
+
+        // Add pixelCount to the session
+        session.user.pixelCount = dbUser?.pixelCount || 0;
       }
-      if (user && user.pixelCount !== undefined) {
-        session.user.pixelCount = user.pixelCount;
-      } else {
-        session.user.pixelCount = 0;
-      }
+
       return session;
     },
     async signIn({ user, account, profile }) {
