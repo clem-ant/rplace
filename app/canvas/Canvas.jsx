@@ -192,7 +192,7 @@ const Canvas = ({
         ref={canvasRef}
         onMouseMove={handleMouseMove}
         onClick={handleMouseClick}
-        className="border border-gray-300 cursor-none"
+        className="border border-primary"
       />
     </div>
   );

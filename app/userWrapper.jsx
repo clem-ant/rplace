@@ -1,13 +1,11 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import Canvas from "./canvas/Canvas";
-import UserColors from "./homeUI/UserColors";
-import UserCount from "./homeUI/userCount";
 import UserPixelInfo from "./homeUI/UserPixelInfo";
 import { SessionProvider } from "next-auth/react";
 import UserModalNotConnected from "./homeUI/UserModalNotConnected";
-import UserInformation from "./homeUI/UserInformation";
 import UserModalNotEnoughPixels from "./homeUI/UserModalNotEnoughtPixels";
+import CanvasInterface from "./interface/CanvasInterface";
 
 export default function UserWrapper() {
   const [selectedColor, setSelectedColor] = useState("#222222"); // Default color
@@ -25,10 +23,6 @@ export default function UserWrapper() {
   const [isModalNotEnoughPixelsOpen, setIsModalNotEnoughPixelsOpen] =
     useState(false);
   const [isButtonPressed, setIsButtonPressed] = useState(false);
-
-  const handleColorSelect = (color) => {
-    setSelectedColor(color);
-  };
 
   const handleMouseDown = (event) => {
     isDragging.current = true;
@@ -94,7 +88,9 @@ export default function UserWrapper() {
       >
         <div
           id="painting"
-          className="w-full h-full"
+          className={`w-full h-full ${
+            scale >= 0.1 && scale <= 0.5 ? "cursor-crosshair" : "cursor-none"
+          }`}
           ref={canvasRef}
           style={{
             transform: `scale(${scale}) translate(${position.x}px, ${position.y}px) `,
@@ -109,30 +105,12 @@ export default function UserWrapper() {
           />
         </div>
       </div>
-
-      <div className="absolute top-0 right-0 p-4 z-10">
-        <UserInformation />
-      </div>
-      <div className="absolute bottom-0 left-0 p-4">
-        <span>
-          <UserCount />
-        </span>
-      </div>
-      <div className="flex flex-wrap gap-2 w-fit fixed bottom-0 left-1/2 transform -translate-x-1/2 p-4">
-        <UserColors
-          onColorSelect={handleColorSelect}
-          selectedColor={selectedColor}
-        />
-      </div>
-
-      <div className="absolute bottom-0 right-0 p-4">
-        {selectedCell.x !== -1 && selectedCell.y !== -1 && (
-          <UserPixelInfo
-            buttonPress={handleButtonPress}
-            selectedCell={selectedCell}
-          />
-        )}
-      </div>
+      <CanvasInterface
+        selectedColor={selectedColor}
+        setSelectedColor={setSelectedColor}
+        selectedCell={selectedCell}
+        handleButtonPress={handleButtonPress}
+      />
     </SessionProvider>
   );
 }
