@@ -31,7 +31,7 @@ export default function UserInformation() {
                 {session?.user?.pixelCount <= 0 && (
                   <p>
                     <Link
-                      href="/recharger"
+                      href="/info/recharger"
                       className="text-primary hover:underline transition-all duration-100"
                     >
                       Comment recharger ?
