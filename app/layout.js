@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import Navbar from "./navbar/navbar";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -14,6 +15,9 @@ const geistMono = localFont({
 
 export const metadata = {
   title: "Place - niclem 4l",
+  icons: {
+    icon: "/favicon.png",
+  },
   description: "r/place clone pour niclem 4l trophy",
 };
 
@@ -23,6 +27,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Navbar />
         <Toaster position="top-center" />
         {children}
       </body>

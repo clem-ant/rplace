@@ -3,6 +3,7 @@ import UserInformation from "../homeUI/UserInformation";
 import UserCount from "../homeUI/userCount";
 import UserColors from "../homeUI/UserColors";
 import UserPixelInfo from "../homeUI/UserPixelInfo";
+import Link from "next/link";
 
 export default function CanvasInterface({
   selectedColor,
@@ -18,7 +19,13 @@ export default function CanvasInterface({
       <div className="absolute top-0 right-0 p-4 z-10">
         <UserInformation />
       </div>
-      <div className="absolute bottom-0 left-0 p-4">
+      <div className="absolute bottom-0 left-0 p-4 flex flex-col items-center justify-between gap-4">
+        <Link
+          href="/info"
+          className="text-sm hover:underline hover:text-primary"
+        >
+          Comment ça marche ?
+        </Link>
         <span>
           <UserCount />
         </span>
