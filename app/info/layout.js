@@ -7,7 +7,7 @@ export default function Layout({ children }) {
       <main className="flex-grow">{children}</main>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-4">
+      <footer className="border-t border-primary/20 py-4 absolute bottom-0 left-0 w-full">
         <div className="container mx-auto flex justify-between">
           <Link href="/info/about">
             <span className="hover:underline">À propos</span>

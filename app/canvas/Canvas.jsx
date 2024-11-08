@@ -187,14 +187,12 @@ const Canvas = ({
   }, [isButtonPressed]);
 
   return (
-    <div className="flex flex-col items-center">
-      <canvas
-        ref={canvasRef}
-        onMouseMove={handleMouseMove}
-        onClick={handleMouseClick}
-        className="border border-primary"
-      />
-    </div>
+    <canvas
+      ref={canvasRef}
+      onMouseMove={handleMouseMove}
+      onClick={handleMouseClick}
+      className="border border-primary"
+    />
   );
 };
 

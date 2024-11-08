@@ -80,7 +80,7 @@ export default function UserWrapper() {
 
       <div
         id="canvas-container"
-        className="w-full h-full cursor-grab bg-primary/20  "
+        className="w-full h-full cursor-grab bg-primary/20 flex items-center justify-center"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -88,7 +88,7 @@ export default function UserWrapper() {
       >
         <div
           id="painting"
-          className={`w-full h-full ${
+          className={`w-fit h-fit ${
             scale >= 0.1 && scale <= 0.5 ? "cursor-crosshair" : "cursor-none"
           }`}
           ref={canvasRef}
