@@ -6,10 +6,10 @@
 
 */
 -- DropForeignKey
-ALTER TABLE `pixel` DROP FOREIGN KEY `Pixel_userEmail_fkey`;
+ALTER TABLE `Pixel` DROP FOREIGN KEY `Pixel_userEmail_fkey`;
 
 -- AlterTable
-ALTER TABLE `pixel` DROP COLUMN `userEmail`,
+ALTER TABLE `Pixel` DROP COLUMN `userEmail`,
     ADD COLUMN `userId` VARCHAR(191) NOT NULL;
 
 -- AddForeignKey

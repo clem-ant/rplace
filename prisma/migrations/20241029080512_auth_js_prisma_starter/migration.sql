@@ -6,7 +6,7 @@
 
 */
 -- AlterTable
-ALTER TABLE `user` DROP COLUMN `password`,
+ALTER TABLE `User` DROP COLUMN `password`,
     ADD COLUMN `email` VARCHAR(191) NULL,
     ADD COLUMN `emailVerified` DATETIME(3) NULL,
     ADD COLUMN `image` VARCHAR(191) NULL,

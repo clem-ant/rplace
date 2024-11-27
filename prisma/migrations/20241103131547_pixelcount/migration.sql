@@ -6,5 +6,5 @@
 
 */
 -- AlterTable
-ALTER TABLE `user` DROP COLUMN `pixelNumber`,
+ALTER TABLE `User` DROP COLUMN `pixelNumber`,
     ADD COLUMN `pixelCount` INTEGER NOT NULL;

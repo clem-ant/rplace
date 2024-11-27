@@ -7,13 +7,13 @@
 
 */
 -- DropForeignKey
-ALTER TABLE `pixel` DROP FOREIGN KEY `Pixel_canvasId_fkey`;
+ALTER TABLE `Pixel` DROP FOREIGN KEY `Pixel_canvasId_fkey`;
 
 -- AlterTable
-ALTER TABLE `pixel` DROP COLUMN `canvasId`;
+ALTER TABLE `Pixel` DROP COLUMN `canvasId`;
 
 -- DropTable
-DROP TABLE `canvas`;
+DROP TABLE `Canvas`;
 
 -- CreateIndex
 CREATE UNIQUE INDEX `Pixel_x_y_key` ON `Pixel`(`x`, `y`);
