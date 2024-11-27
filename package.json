@@ -10,14 +10,14 @@
     "seed": "node prisma/seed.js"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.7.2",
-    "@prisma/client": "^5.21.1",
+    "@auth/prisma-adapter": "^2.7.4",
+    "@prisma/client": "^5.22.0",
     "@radix-ui/react-dialog": "^1.1.2",
-    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-icons": "^1.3.2",
     "@radix-ui/react-slot": "^1.1.0",
     "bcrypt": "^5.1.1",
     "canvas": "^2.11.2",
-    "class-variance-authority": "^0.7.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
     "konva": "^9.3.16",
@@ -25,18 +25,18 @@
     "next": "14.2.16",
     "next-auth": "^4.24.10",
     "place": "file:",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
     "react-konva": "^18.2.10",
-    "socket.io": "^4.8.0",
-    "socket.io-client": "^4.8.0",
-    "tailwind-merge": "^2.5.4",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "postcss": "^8",
-    "prisma": "^5.21.1",
-    "tailwindcss": "^3.4.1"
+    "postcss": "^8.4.49",
+    "prisma": "^5.22.0",
+    "tailwindcss": "^3.4.15"
   }
 }
